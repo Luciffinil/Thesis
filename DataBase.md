@@ -1,0 +1,28 @@
+登录管理
+T_USER 验证密码，修改密码
+T_USER_LOGIN 登录状态，90天修改密码，密码错误次数
+
+权限管理
+T_PLAT_FUNC
+T_PLAT_MENU
+T_RIGHT
+
+用户管理
+T_USER
+
+角色管理
+T_ROLE
+T_RIGHT
+
+机构管理
+T_ORGAN
+
+关系表
+T_USER_ROLE
+T_ROLE_RIGHT
+T_ROLE_FUND
+T_USER_ORGAN
+T_ROLE_ORGAN
+
+工具
+T_DICT
