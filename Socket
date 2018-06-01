@@ -1,0 +1,41 @@
+1 线程启动
+线程池初始化
+ExecutorHolder(class)
+cachedExecutorService(newCachedThreadPool())
+
+Acitivate(com.pye.ifsp.common)
+  start() -> initSocketListener() -> 调用 new SocketServer(), 然后 run()
+
+SocketServer(Runnable)
+  SocketServer() -> new ServerSocket(port)
+  run() -> serverSocket.accept()
+           调用 SocketMessageReceiver 的 run() 开始监听当前端口
+    
+ 
+2 发送消息
+SocketUtil(class)
+  broadcast(SocketMessage message) -> 调用 SocketMessageSender(host, message) 的 run()
+
+
+3 发送和接受消息的通信
+SocketMessageSender(class)  
+  connet() -> new Socket(host, port)  此时host主机上监听port端口(line 11)
+  
+发送时,第一次发送 type, 即 SocketServerHandler 的实现类  - SocketMessageReceiver接收
+      第二次发送 isReturn, 表面调用的方法  - SocketMessageReceiver接收
+      第三次发送 object, 是时间调用方法的参数(cacheUpdater的javaBean参数) - SocketServerHandler 的具体实现类接收
+
+
+4 消息处理
+SocketServerHandler(interface)
+void handle(ObjectInputStream ois)
+  - CacheSocketServerHandler(abstract class)
+  Object readObject(ObjectInputStream ois)
+  (@Override) void handler(ObjectInputStream ois)
+  抽象类用于cache更新,使用cacheUpdater接口进行具体处理
+    - BaseCacheSocketServerHandler(class)
+    Object readObject(ObjectInputStream ois)
+    - ValuationCacheSocketServerHandler(class)
+    (@Override) Object readObject(ObjectInputStream ois)
+    使用此类的作用是用于读取ois中的Object(类加载问题),应为具体实现类存放于各个bundle中,才可以读取当前bundle的javaBean.
+    
