@@ -26,3 +26,83 @@ Ext.Ajax.request({
 User user = sqlSessionTemplate.selectOne("security.user.find", userCode);
 ```
 
+缓存模块
+缓存容器
+```java
+public class CacheHolder extends ConcurrentHashMap<String, Object>{
+	private static final CacheHolder cacheHolder = new CacheHolder();
+	
+	private CacheHolder() {}
+	
+	public static CacheHolder getInstance() {
+		return cacheHolder;
+	}
+	
+	public <T> T getCache(Object key) {
+		return (T)super.get(key);
+	}
+	
+	public <T> T get(String cacheKey, String bizKey) {
+		Map<String, Object> bizCache = (Map<String, Object>) super.get(cacheKey);
+		if(bizCache == null) {
+			throw new RuntimeException("No cache object find from " + CacheHolder.class.getSimpleName() + " by cacheKey:" + cacheKey);
+		}
+		return (T)bizCache.get(bizKey);
+	}
+}
+```
+
+接口 CacheUpdater.java
+```java
+public interface CacheUpdater {
+	void update(Object record);
+}
+```
+
+抽象类  AbstractCacheUpdater.java
+```java
+public abstract class AbstractCacheUpdater implements CacheUpdater{
+	@Override
+	public void update(Object object) {
+		Map<String, Object> option = (Map<String, Object>)object;
+		String cacheOp = (String)option.get("CACHE_OP");
+		if(StringUtils.equals(cacheOp, "CACHE_OP_PUT")) {
+			put(option);
+		}else if(StringUtils.equals(cacheOp, "CACHE_OP_REMOVE")) {
+			remove(option);
+		}else if(StringUtils.equals(cacheOp, "CACHE_OP_RELOAD")) {
+			reload(option);
+		}else {
+			throw new RuntimeException("未知CACHE_OP:" + cacheOp);
+		}
+	}
+	
+	abstract public void put(Map<String, Object> option);
+	abstract public void remove(Map<String, Object> option);
+	abstract public void reload(Map<String, Object> option);
+}
+```
+
+实现类
+```java
+public class UserCacheUpdater extends AbstractCacheUpdater {
+	@Override
+	public void put(Map<String, Object> option) {
+
+	}
+
+	@Override
+	public void remove(Map<String, Object> option) {
+
+	}
+
+	@Override
+	public void reload(Map<String, Object> option) {
+
+	}
+	
+}
+
+```
+
+
